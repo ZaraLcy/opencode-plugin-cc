@@ -1,0 +1,21 @@
+{
+  "name": "zaralcy-opencode",
+  "owner": {
+    "name": "ZaraLcy"
+  },
+  "metadata": {
+    "description": "Plugin to use opencode from Claude Code for code review and task delegation.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "opencode",
+      "description": "Use opencode from Claude Code to review code or delegate tasks.",
+      "version": "0.1.0",
+      "author": {
+        "name": "community"
+      },
+      "source": "./plugins/opencode"
+    }
+  ]
+}

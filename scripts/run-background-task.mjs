@@ -11,7 +11,7 @@ const [, , baseUrl, sessionId, ...promptParts] = process.argv;
 const prompt = promptParts.join(' ');
 
 function getConfigDir() {
-  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.config', 'opencode-plugin');
+  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.opencode-plugin');
 }
 
 try {

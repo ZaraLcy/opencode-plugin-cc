@@ -1,10 +1,10 @@
-import { readFile, writeFile, unlink } from 'node:fs/promises';
+import { readFile, writeFile, unlink, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { spawn } from 'node:child_process';
 
 function getConfigDir() {
-  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.config', 'opencode-plugin');
+  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.opencode-plugin');
 }
 
 function serverFile() {
@@ -41,43 +41,36 @@ export async function getServerStatus() {
 /**
  * Starts opencode serve. Idempotent — returns existing status if already running.
  */
+async function waitForHttp(url, timeoutMs = 15_000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(url);
+      if (res.ok || res.status === 404) return true; // server is up
+    } catch { /* not ready yet */ }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  return false;
+}
+
 export async function startServer(port = 4567) {
   const existing = await getServerStatus();
   if (existing.running) return existing;
 
-  return new Promise((resolve, reject) => {
-    const child = spawn('opencode', ['serve', '--port', String(port)], {
-      detached: true,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let resolved = false;
-    const timeout = setTimeout(() => {
-      if (!resolved) reject(new Error('opencode serve did not start within 10 seconds'));
-    }, 10_000);
-
-    function onData(data) {
-      const lines = String(data).split('\n');
-      for (const line of lines) {
-        const p = parsePortFromOutput(line);
-        if (p) {
-          resolved = true;
-          clearTimeout(timeout);
-          const record = { pid: child.pid, port: p, startedAt: new Date().toISOString() };
-          writeFile(serverFile(), JSON.stringify(record, null, 2))
-            .then(() => resolve({ running: true, ...record }))
-            .catch(reject);
-          child.stdout.removeListener('data', onData);
-          child.stderr.removeListener('data', onData);
-        }
-      }
-    }
-
-    child.stdout.on('data', onData);
-    child.stderr.on('data', onData);
-    child.on('error', reject);
-    child.unref();
+  const child = spawn('opencode', ['serve', '--port', String(port)], {
+    detached: true,
+    stdio: 'ignore',
   });
+  child.unref();
+
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const ready = await waitForHttp(`${baseUrl}/session`);
+  if (!ready) throw new Error(`opencode serve did not start within 15 seconds on port ${port}`);
+
+  const record = { pid: child.pid, port, startedAt: new Date().toISOString() };
+  await mkdir(getConfigDir(), { recursive: true });
+  await writeFile(serverFile(), JSON.stringify(record, null, 2));
+  return { running: true, ...record };
 }
 
 /**

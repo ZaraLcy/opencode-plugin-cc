@@ -12,12 +12,13 @@ export async function parseSSELines(lines) {
 }
 
 /**
- * Extracts and concatenates all text content from parsed events.
+ * Extracts and concatenates all text content from a parts array.
+ * Handles REST API format: [{type:"text", text:"..."}, ...]
  */
-export function extractText(events) {
-  return events
-    .filter(e => e.type === 'text' && e.part?.text)
-    .map(e => e.part.text)
+export function extractText(parts) {
+  return parts
+    .filter(p => p.type === 'text' && p.text)
+    .map(p => p.text)
     .join('');
 }
 

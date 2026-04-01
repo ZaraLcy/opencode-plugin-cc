@@ -29,7 +29,8 @@ export async function createSession(baseUrl, title = 'Claude Code task') {
 }
 
 /**
- * Sends a message and collects the full NDJSON response as an array of lines.
+ * Sends a message and returns the parts array from the REST response.
+ * REST API returns: { info: {...}, parts: [{type, text?, ...}] }
  */
 export async function sendMessageForeground(baseUrl, sessionId, text, opts = {}) {
   const res = await fetch(`${baseUrl}/session/${sessionId}/message`, {
@@ -38,8 +39,8 @@ export async function sendMessageForeground(baseUrl, sessionId, text, opts = {})
     body: JSON.stringify(buildMessageBody(text, opts)),
   });
   if (!res.ok) throw new Error(`POST /session/${sessionId}/message failed: ${res.status}`);
-  const body = await res.text();
-  return body.split('\n').filter(Boolean);
+  const body = await res.json();
+  return body.parts ?? [];
 }
 
 /**

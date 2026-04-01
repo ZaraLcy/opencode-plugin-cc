@@ -2,7 +2,7 @@
 import { getServerStatus, startServer, stopServer } from './lib/server.mjs';
 import { createSession, sendMessageForeground, abortSession } from './lib/api.mjs';
 import { saveSession, loadSession, findResumable, markCompleted, markFailed } from './lib/sessions.mjs';
-import { parseSSELines, extractText, renderSetupReport, renderTaskResult, renderBackgroundJobStart } from './lib/render.mjs';
+import { extractText, renderSetupReport, renderTaskResult, renderBackgroundJobStart } from './lib/render.mjs';
 import { collectDiff, buildReviewPrompt } from './lib/git.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -16,8 +16,10 @@ const execFileAsync = promisify(execFile);
 const SCRIPT_DIR = fileURLToPath(new URL('.', import.meta.url));
 
 function getConfigDir() {
-  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.config', 'opencode-plugin');
+  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.opencode-plugin');
 }
+
+const BOOLEAN_FLAGS = new Set(['fresh', 'background', 'foreground', 'write', 'json', 'resume']);
 
 function parseArgs(argv) {
   const flags = {};
@@ -26,8 +28,11 @@ function parseArgs(argv) {
     if (argv[i].startsWith('--')) {
       const key = argv[i].slice(2);
       const next = argv[i + 1];
-      if (next && !next.startsWith('--')) { flags[key] = next; i++; }
-      else flags[key] = true;
+      if (!BOOLEAN_FLAGS.has(key) && next && !next.startsWith('--')) {
+        flags[key] = next; i++;
+      } else {
+        flags[key] = true;
+      }
     } else {
       positional.push(argv[i]);
     }
@@ -106,9 +111,8 @@ async function cmdTask(flags, prompt) {
 
   const startedAt = new Date().toISOString();
   try {
-    const lines = await sendMessageForeground(baseUrl, sessionId, prompt);
-    const events = await parseSSELines(lines);
-    const text = extractText(events);
+    const parts = await sendMessageForeground(baseUrl, sessionId, prompt);
+    const text = extractText(parts);
     const completedAt = new Date().toISOString();
     await markCompleted(sessionId);
     console.log(renderTaskResult({ sessionId, text, startedAt, completedAt }));
@@ -131,9 +135,8 @@ async function cmdReview(flags) {
   await saveSession(sessionId, { prompt: '[review]', claudeSessionId, status: 'running' });
 
   const startedAt = new Date().toISOString();
-  const lines = await sendMessageForeground(baseUrl, sessionId, prompt);
-  const events = await parseSSELines(lines);
-  const text = extractText(events);
+  const parts = await sendMessageForeground(baseUrl, sessionId, prompt);
+  const text = extractText(parts);
   const completedAt = new Date().toISOString();
   await markCompleted(sessionId);
   console.log(renderTaskResult({ sessionId, text, startedAt, completedAt }));

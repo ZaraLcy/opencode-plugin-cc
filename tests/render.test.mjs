@@ -14,12 +14,12 @@ test('parseSSELines extracts text events from ndjson stream', async () => {
 });
 
 test('extractText joins all text parts', () => {
-  const events = [
-    { type: 'text', part: { text: 'Hello ' } },
-    { type: 'step_start', part: {} },
-    { type: 'text', part: { text: 'world' } },
+  const parts = [
+    { type: 'text', text: 'Hello ' },
+    { type: 'step-start' },
+    { type: 'text', text: 'world' },
   ];
-  assert.equal(extractText(events), 'Hello world');
+  assert.equal(extractText(parts), 'Hello world');
 });
 
 test('renderSetupReport formats ready state', () => {

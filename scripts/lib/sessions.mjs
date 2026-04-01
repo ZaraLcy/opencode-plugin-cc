@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 
 function getConfigDir() {
-  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.config', 'opencode-plugin');
+  return process.env.OPENCODE_PLUGIN_DIR ?? join(homedir(), '.opencode-plugin');
 }
 
 function sessionsDir() {

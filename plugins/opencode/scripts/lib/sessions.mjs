@@ -36,7 +36,7 @@ export async function findResumable(claudeSessionId) {
     })
   );
   const matching = sessions
-    .filter(s => s.claudeSessionId === claudeSessionId)
+    .filter(s => s.claudeSessionId === claudeSessionId && s.status !== 'running')
     .sort((a, b) => new Date(b.startedAt) - new Date(a.startedAt));
   return matching[0] ?? null;
 }

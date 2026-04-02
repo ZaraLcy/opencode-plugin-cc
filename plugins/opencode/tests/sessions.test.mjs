@@ -40,6 +40,19 @@ test('findResumable returns null when no matching session', async () => {
   assert.equal(found, null);
 });
 
+test('findResumable excludes running sessions (running session is not returned as resumable)', async () => {
+  await saveSession('ses_running', { prompt: 'in progress', claudeSessionId: 'claude_run', status: 'running', startedAt: '2026-04-01T12:00:00Z' });
+  const found = await findResumable('claude_run');
+  assert.equal(found, null);
+});
+
+test('findResumable returns completed session when running session also exists (completed session is still resumable)', async () => {
+  await saveSession('ses_done', { prompt: 'done task', claudeSessionId: 'claude_mix', status: 'completed', startedAt: '2026-04-01T10:00:00Z' });
+  await saveSession('ses_active', { prompt: 'active task', claudeSessionId: 'claude_mix', status: 'running', startedAt: '2026-04-01T11:00:00Z' });
+  const found = await findResumable('claude_mix');
+  assert.equal(found.sessionId, 'ses_done');
+});
+
 test('markCompleted updates session status', async () => {
   await saveSession('ses_mark', { prompt: 'task', claudeSessionId: 'claude_abc', status: 'running' });
   await markCompleted('ses_mark');

@@ -10,4 +10,4 @@
 - [x] 2.1 確認頂層不存在 `agents/`、`scripts/`、`skills/`、`commands/` 目錄（no duplicate directories at root）
 - [x] 2.2 確認 `plugins/opencode/` 內容完整，未遺漏任何檔案
 - [x] 2.3 執行 `npm test` 確認測試通過
-- [ ] 2.4 Commit 並 push 變更
+- [x] 2.4 Commit 並 push 變更

@@ -7,5 +7,5 @@
 
 ## 2. 驗證與發布
 
-- [ ] 2.1 Commit 並 push 到 GitHub
-- [ ] 2.2 執行 `claude plugins install opencode@zaralcy-opencode` 更新安裝版本（或手動複製修改後的檔案到 cache）
+- [x] 2.1 Commit 並 push 到 GitHub
+- [x] 2.2 執行 `claude plugins install opencode@zaralcy-opencode` 更新安裝版本（或手動複製修改後的檔案到 cache）

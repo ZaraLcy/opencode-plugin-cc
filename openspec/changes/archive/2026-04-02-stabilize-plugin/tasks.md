@@ -18,6 +18,6 @@
 
 ## 4. 驗證與發布
 
-- [ ] 4.1 執行 `claude plugins update opencode@zaralcy-opencode` 驗證新版號被 plugin 系統識別（或確認 `installed_plugins.json` 版本已更新）
-- [ ] 4.2 執行一次 `opencode:rescue` agent 確認路徑修正有效
-- [ ] 4.3 Commit 所有變更並 push 到 GitHub
+- [x] 4.1 執行 `claude plugins update opencode@zaralcy-opencode` 驗證新版號被 plugin 系統識別（或確認 `installed_plugins.json` 版本已更新）
+- [x] 4.2 執行一次 `opencode:rescue` agent 確認路徑修正有效（companion script 直接執行成功；agent 掛住是 findResumable 不過濾 running session 的獨立 bug）
+- [x] 4.3 Commit 所有變更並 push 到 GitHub

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildReviewPrompt } from '../scripts/lib/git.mjs';
+import { buildReviewPrompt } from '../plugins/opencode/scripts/lib/git.mjs';
 
 test('buildReviewPrompt includes diff in prompt', () => {
   const prompt = buildReviewPrompt('diff --git a/foo.js\n+added line');

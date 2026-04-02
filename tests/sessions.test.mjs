@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 // Override CONFIG_DIR for tests
 process.env.OPENCODE_PLUGIN_DIR = join(tmpdir(), `opencode-plugin-test-${Date.now()}`);
 
-const { saveSession, loadSession, findResumable, markCompleted } = await import('../scripts/lib/sessions.mjs');
+const { saveSession, loadSession, findResumable, markCompleted } = await import('../plugins/opencode/scripts/lib/sessions.mjs');
 
 before(async () => {
   await mkdir(process.env.OPENCODE_PLUGIN_DIR, { recursive: true });

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseSSELines, extractText, renderSetupReport } from '../scripts/lib/render.mjs';
+import { parseSSELines, extractText, renderSetupReport } from '../plugins/opencode/scripts/lib/render.mjs';
 
 test('parseSSELines extracts text events from ndjson stream', async () => {
   const lines = [

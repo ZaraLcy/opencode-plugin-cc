@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildMessageBody, parseSessionResponse } from '../scripts/lib/api.mjs';
+import { buildMessageBody, parseSessionResponse } from '../plugins/opencode/scripts/lib/api.mjs';
 
 test('buildMessageBody wraps text in parts array', () => {
   const body = buildMessageBody('fix the bug');

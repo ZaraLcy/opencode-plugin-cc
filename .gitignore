@@ -1,2 +1,5 @@
 node_modules/
 *.output.ndjson
+.spectra/
+openspec/.vector-search.db*
+.claude/settings.local.json
